@@ -13,30 +13,30 @@ terraform {
 }
 
 resource "azurerm_resource_group" "example" {
-  name     = "example"
-  location = "West Europe"
+  name     = "${var.azurerm_resource_group_name}"
+  location = "${var.azurerm_resource_group_location}"
 }
 
 resource "azurerm_storage_account" "example" {
-  name                     = "storageaccountname"
+  name                     = "${var.azurerm_storage_account_name}"
   resource_group_name      = azurerm_resource_group.example.name
   location                 = azurerm_resource_group.example.location
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
+  account_tier             = "${var.azurerm_storage_account_tier}"
+  account_replication_type = "${var.azurerm_storage_account_replication_type}"
 
 }
 
 resource "azurerm_service_plan" "example" {
-  name                = "example"
+  name                = "${var.azurerm_service_plan_name}"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
-  os_type             = "Linux"
-  sku_name            = "P1v2"
+  os_type             = "${var.azurerm_service_plan_os_type}"
+  sku_name            = "${var.azurerm_service_plan_sku_name}"
 }
 
 
 resource "azurerm_linux_function_app" "example" {
-  name                = "example-linux-function-app"
+  name                = "${var.azurerm_linux_function_app_name}"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
 
@@ -48,29 +48,13 @@ resource "azurerm_linux_function_app" "example" {
 }
 
 resource "azurerm_function_app_function" "example" {
-  name            = "example-function-app-function"
+  name            = "${var.azurerm_function_app_function_name}"
   function_app_id = azurerm_linux_function_app.example.id
-  language        = "Python"
+  language        = "${var.azurerm_function_app_function_language}"
   test_data = jsonencode({
-    "name" = "Azure"
+    "name" = "${var.test_data_name}"
   })
   config_json = jsonencode({
-    "bindings" = [
-      {
-        "authLevel" = "function"
-        "direction" = "in"
-        "methods" = [
-          "get",
-          "post",
-        ]
-        "name" = "req"
-        "type" = "httpTrigger"
-      },
-      {
-        "direction" = "out"
-        "name"      = "$return"
-        "type"      = "http"
-      },
-    ]
+    "bindings" = "${var.test_data_bindings}"
   })
 }
